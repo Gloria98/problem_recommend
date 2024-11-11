@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Study</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="RecommendationView.js"></script>
+    <script src="VariableInfo.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+</head>
+<style>
+
+    .circle {
+        width: 15px;         /* Circle diameter */
+        height: 15px;        /* Circle diameter */
+        border-radius: 50%;  /* Makes it a circle */
+        display: inline-block;
+    }
+    .rotate {
+        writing-mode: vertical-rl; /* Rotates text vertically */
+        text-orientation: mixed;   /* Keeps the letters upright */
+        transform: rotate(225deg); /* Rotate text to read top to bottom */
+        white-space: nowrap;       /* Prevents text wrapping */
+        padding: 10px;              /* Adjust padding as needed */
+        height: 170px;             /* Adjust height based on your table */
+        vertical-align: bottom;    /* Align text at the bottom of the cell */
+        text-align: center;        /* Center align text in the cell */
+    }
+    .hidden {
+        display: none;
+    }
+
+    .star-rating {
+        color: #ccc; /* Unfilled star color */
+        font-size: 1em;
+    }
+
+    .star-rating .star.filled {
+        color: #ffca28; /* Filled star color */
+    }
+
+    #context-menu {
+        position: absolute;
+        z-index: 10000;
+        width: 500px;
+        padding: 5px;
+        border: solid lightgray 1px;
+        border-radius: 2px;
+        transform: scale(0);
+        transform-origin: top left;
+        background-color: #f5f5f5;
+    }
+    #context-menu.visible {
+        transform: scale(1);
+        transition: transform 200ms ease-in-out;
+    }
+</style>
+<body style="background-color: rgba(250, 250, 250, 1)">
+<div id="study-setting" style="width: 200px;">
+    <div class="mb-3">
+        <label for="pid-input" class="form-label">Pid</label>
+        <input type="email" class="form-control" id="pid-input" aria-describedby="emailHelp">
+    </div>
+    <select id="topic" class="form-select" aria-label="Default select example">
+        <option selected>Topic</option>
+        <option value="mental">Mental Health</option>
+        <option value="academic">Academic Performance</option>
+        <option value="social">Social Life</option>
+    </select>
+    <select id="condition" class="form-select" aria-label="Default select example">
+        <option selected>Condition</option>
+        <option value="baseline">b</option>
+        <option value="performance">p</option>
+        <option value="relevance">r</option>
+        <option value="pareto">f</option>
+    </select>
+    <button id="study-setting-submit" type="button" class="btn btn-outline-primary">Submit</button>
+</div>
+<div id="main-view" style="font-size: 13px;"></div>
+<script>
+    document.getElementById('study-setting-submit').addEventListener('click', function (e) {
+        const topicSelect = document.getElementById("topic");
+        const topic = topicSelect.value;
+        console.log(topic);
+        const conditionSelect = document.getElementById("condition");
+        const condition = conditionSelect.value;
+        console.log(condition);
+        const pid = document.getElementById('pid-input').value;
+        console.log(pid);
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                // Typical action to be performed when the document is ready:
+                // document.getElementById("demo").innerHTML = xhttp.responseText;
+                let data = JSON.parse(xhttp.responseText);
+                console.log(data);
+                document.getElementById('study-setting').classList.add('hidden')
+                let main_view = new RecommendationView('main-view');
+                main_view.init(data, topic, condition, pid);
+            }
+        };
+        // xhttp.open("GET", "https://0df5-2603-6080-6900-537b-21d6-761d-ef18-324c.ngrok-free.app/get_file_list", true);
+        xhttp.open("GET", "http://127.0.0.1:8985/get_data/" + topic + '/' + condition, true);
+        xhttp.send();
+    })
+
+
+
+</script>
+</body>
+</html>
